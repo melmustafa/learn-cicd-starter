@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"fmt"
 	"log"
 	"testing"
 )
@@ -31,13 +32,13 @@ func TestGetAPIKey(t *testing.T) {
 		{
 			name: "malformed auth key",
 			headers: map[string][]string{
-				"Authorization": {"ApiKey  "},
+				"Authorization": {"ApiKey"},
 			},
 			expected:  "",
 			errString: "malformed authorization header",
 		},
 		{
-			name: "include auth header",
+			name: "correct auth",
 			headers: map[string][]string{
 				"Authorization": {"ApiKey helloworld"},
 			},
@@ -47,22 +48,22 @@ func TestGetAPIKey(t *testing.T) {
 	}
 	for _, test := range tests {
 		key, err := GetAPIKey(test.headers)
-		if key == test.expected {
+		if test.expected != "" && key == test.expected {
 			continue
 		}
 		if key != test.expected {
-			log.Fatalln("did not get expected key")
-			log.Fatalf("Expected key: %s, Actual key: %s\n", test.expected, key)
+			fmt.Println("Test: " + test.name)
+			log.Fatalf("did not get expected key\nExpected key: %s, Actual key: %s\n", test.expected, key)
 		}
 		if test.errString != "" && err == nil {
-			log.Fatalln("expected error and got nothing")
-			log.Fatalf("Expected error: %s\n", test.errString)
+			fmt.Println("Test: " + test.name)
+			log.Fatalf("expected error and got nothing\nExpected error: %s\n", test.errString)
 		} else if test.errString == "" && err != nil {
-			log.Fatalln("expected no error and got one")
-			log.Fatalf("Actual error: %s\n", err.Error())
+			fmt.Println("Test: " + test.name)
+			log.Fatalf("expected no error and got one\nActual error: %s\n", err.Error())
 		} else if err != nil && err.Error() != test.errString {
-			log.Fatalln("Something did not go as expected")
-			log.Fatalf("Expected key: %s, Actual key: %s\n", test.expected, key)
+			fmt.Println("Test: " + test.name)
+			log.Fatalf("Something did not go as expected\nExpected key: %s, Actual key: %s\n", test.errString, err.Error())
 		}
 	}
 }
