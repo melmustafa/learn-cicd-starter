@@ -24,6 +24,14 @@ jobs:
       - name: Build
         run: ./scripts/buildprod.sh
 
+      - name: Installing goose
+        run: go install github.com/pressly/goose/v3/cmd/goose@latest
+
+      - name: DB Migration
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: ./scripts/migrateup.sh
+
       - id: 'auth'
         uses: 'google-github-actions/auth@v2'
         with:
